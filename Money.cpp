@@ -21,25 +21,23 @@ namespace Money
     }
 
     Money::Money(std::string currency, long coin)
-            : currency(std::move(currency)),
-            coin(coin)
-    {}
+        : currency(std::move(currency)),
+        coin(coin) {}
 
     Money::Money(const Money &money)
-    {
-        coin     = money.coin;
-        currency = money.currency;
-    }
+        :coin(money.coin),
+        currency(money.currency) {}
 
     Money& Money::operator=(const Money &money)
     {
-        coin = static_cast<long>( round( static_cast<double>(money.coin) * exchange( currency, money.currency )));
+        coin     = money.coin;
+        currency = money.currency;
         return *this;
     }
 
-    double Money::exchange(const std::string &currency_1, const std::string &currency_2)
+    long Money::exchange(long coin, const std::string &currency_1, const std::string &currency_2)
     {
-        return Money::table_currency[currency_1] / Money::table_currency[currency_2];
+        return std::lround( coin * Money::table_currency[currency_1] / Money::table_currency[currency_2] );
     }
 
 
@@ -61,49 +59,49 @@ namespace Money
     Money Money::operator+(const Money &money)
     {
 
-        long result_coin = coin + static_cast<long>(round( static_cast<double>( money.coin ) * exchange( this->currency, money.currency )));
+        long result_coin = coin + exchange(money.coin, currency, money.currency);
 
         return Money(currency, result_coin);
     }
 
     Money Money::operator-(const Money &money)
     {
-        long result_coin = coin - static_cast<long>( round( static_cast<double>(money.coin) * exchange( currency, money.currency )));
+        long result_coin = coin - exchange(money.coin, currency, money.currency);
 
-        return Money(currency, result_coin);;
+        return Money(currency, result_coin);
     }
 
     const Money& Money::operator+=(const Money &money)
     {
-        coin += static_cast<long>(round( static_cast<double>( money.coin ) * exchange( currency, money.currency )));
+        coin += exchange(money.coin, currency, money.currency);
         return *this;
     }
 
     const Money& Money::operator-=(const Money &money)
     {
-        coin += static_cast<long>(round( static_cast<double>( money.coin ) * exchange( currency, money.currency )));
+        coin -= exchange(money.coin, currency, money.currency);
         return *this;
     }
 
     double Money::operator/ (const Money &money)
     {
-        return static_cast<double>(coin) / static_cast<double>(money.coin) / exchange(this->currency, money.currency) ;
+        return static_cast<double>(coin) / exchange(money.coin, currency, money.currency) ;
     }
 
     Money Money::operator*(double factor)
     {
-        return Money(currency, static_cast<long>(round(static_cast<double >(coin)*factor)));
+        return Money(currency, std::lround(coin*factor) );
     }
 
     const Money& Money::operator*=(double factor)
     {
-        coin = static_cast<long>(round(static_cast<double >(coin)*factor));
+        coin = std::lround( coin * factor);
         return *this;
     }
 
     const Money& Money::operator/=(double divider)
     {
-        coin = static_cast<long>(round(static_cast<double >(coin) / divider));
+        coin = std::lround( coin / divider );
         return *this;
     }
 
@@ -114,21 +112,21 @@ namespace Money
             input >> money.currency;
             input >> amount;
 
-            if (input.good() && Money::table_currency.find(money.currency) != Money::table_currency.end()) break;
+            if (input.good() && Money::table_currency.find(money.currency) != Money::table_currency.cend()) break;
             std::cout << "Please enter the amount correctly: ";
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
 
 
-        money.coin = static_cast<short>( round(amount * 100));
+        money.coin = std::lround( amount * 100 );
 
         return input;
     }
 
     std::ostream &operator<<(std::ostream &output, const Money &money)
     {
-        output << money.currency << ' ' << static_cast<double>(money.coin) / 100.0;
+        output << money.currency << ' ' << money.coin / 100.0;
         return output;
     }
 

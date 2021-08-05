@@ -7,7 +7,7 @@ namespace Money
 {
     using TableCurrency = std::map<std::string, double>;
 
-    class Money
+    class Money final
     {
     private:
         static TableCurrency table_currency;
@@ -17,8 +17,8 @@ namespace Money
 
 
     private:
-        explicit Money(std::string currency,long coin);
-        static double exchange(const std::string& currency_1,const std::string& currency_2);
+        Money(std::string currency, long coin);
+        static long exchange(long coin, const std::string& currency_1, const std::string& currency_2);
 
     public:
         class currency_is_empty : std::exception
