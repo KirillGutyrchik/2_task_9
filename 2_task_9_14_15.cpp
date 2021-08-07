@@ -21,7 +21,7 @@ int main()
 
     catch(Money::Money::currency_is_empty&)
     {
-        std::cout << "currency table not initialized" << std::endl;
+        std::cout << "Currency table not initialized." << std::endl;
     }
 
     return 0;
