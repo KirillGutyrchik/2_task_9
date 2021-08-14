@@ -3,6 +3,7 @@
 #include <limits>
 #include <cmath>
 #include <utility>
+#include <iomanip>
 
 
 
@@ -22,11 +23,11 @@ namespace Money
 
     Money::Money(std::string currency, long coin)
         : currency(std::move(currency)),
-          coin    (coin) {}
+          coin(coin) {}
 
     Money::Money(const Money &money)
         : currency(money.currency),
-          coin    (money.coin) {}
+          coin(money.coin) {}
 
     Money& Money::operator=(const Money &money)
     {
@@ -127,7 +128,7 @@ namespace Money
 
     std::ostream &operator<<(std::ostream &output, const Money &money)
     {
-        output << money.currency << ' ' << money.coin / 100.0;
+        output << money.currency << ' ' << std::fixed << std::setprecision(2) << money.coin / 100.0;
         return output;
     }
 
